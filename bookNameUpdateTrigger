@@ -1,0 +1,22 @@
+When We update book name, book_count__c should be increased on every update.
+
+//////////////////Trigger//////////////
+trigger bookNameUpdateTrigger on Books__c (before update) {
+    bookNameUpdateClass.myMethod(trigger.new, trigger.oldmap);
+
+}
+
+/////////////////Class/////////////////
+public class bookNameUpdateClass {
+    public static void myMethod(List<Books__c>newBook,Map<Id,Books__c>oldBook){
+        for(Books__c book : newBook){
+            if(book.book_count__c == Null){
+                book.book_count__c = 0;
+                
+            }
+            if(book.Name != oldBook.get(book.Id).Name){
+                book.book_count__c = book.book_count__c + 1;
+            }
+            
+        }
+}}
