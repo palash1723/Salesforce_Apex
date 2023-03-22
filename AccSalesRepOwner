@@ -1,0 +1,21 @@
+When we create the Account record, the Account Owner will be automatically added to Sales Rep field. When we update the Account owner of the record, 
+then also the Sales Rep will be automatically updated.
+
+//////////Trigger////////////////
+trigger AccSalesRepOwner on Account (before insert,before Update) {
+AccSalesRepOwnerClass.myMethod(trigger.new);
+}
+
+//////////Class//////////////////
+public class AccSalesRepOwnerClass {
+    public static void myMethod(List<Account>accList){
+        Set<Id>accOwnerId = new Set<Id>();
+        for(Account ac:accList){
+            accOwnerId.add(ac.OwnerId);
+        }
+        
+        Map<Id,User>userList=new Map<Id,User>([Select Id,Name From User where Id=:accOwnerId]);
+        for(Account acc: accList){
+            acc.Sales_Repr__c = userList.get(acc.OwnerId).Name;
+        }}}
+
