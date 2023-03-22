@@ -1,0 +1,28 @@
+///////Trigger
+trigger Accounthas2conThenCanNotDel on Account (before delete) {
+    Accounthas2conThenCanNotDelClass.myMethod(trigger.old);
+
+}
+
+
+//////////Class
+
+public class Accounthas2conThenCanNotDelClass {
+    public static void myMethod(List<Account>accList){
+        Set<Id>accId = new Set<Id>();
+        for(Account ac: accList){
+            accId.add(ac.Id);
+            
+            Map<Id,Account>mapAccount = new Map<Id,Account>([Select Id,Name,(Select Id,Name From Contacts) From Account where Id=:accId]);
+            for(Account account : accList){
+                if(mapAccount.get(account.Id).Contacts.size() > 1){
+                    account.addError('This account is associated with More than 1 Contact, So you have not Persmission to Delete it!!');   
+                }
+                
+            }
+        }
+        
+    }
+
+}
+
