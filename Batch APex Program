@@ -1,0 +1,137 @@
+
+global class OppoBatchApex implements Database.Batchable<sObject>{
+    global Database.QueryLocator start(Database.BatchableContext bc){
+        return Database.getQueryLocator('Select Id,Name,LeadSource,StageName,Amount From Opportunity');
+    }
+    global void execute(Database.BatchableContext bc,List<Opportunity>Oplist){
+        List<Opportunity>Opplist = new List<Opportunity>();
+        For(Opportunity Opp:Oplist){
+            Opp.Name='Anu';
+            Opp.LeadSource='Web';
+            Opp.StageName='Prospecting';
+            Opp.Amount=105210;
+            Opplist.add(Opp);
+        }
+        Update Opplist;
+    }
+    global void finish(Database.BatchableContext bc){
+        
+    }
+}
+
+
+
+To Run This –
+
+OppoBatchApex  con = new OppoBatchApex ();
+database.executeBatch(con,200);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Schedulable Apex Class
+
+public class OppoBatchApex_Schedulable implements Schedulable {
+    public void execute(SchedulableContext S){
+      OppoBatchApex A = New OppoBatchApex();
+            Database.executeBatch(A,20);   
+    }}
+To Run Schedule—---
+
+OppoBatchApex_Schedulable  op = new OppoBatchApex_Schedulable ();
+system.schedule(op,200);
+
+
+Steps for Manual Schedule—---------
+
+Setup->Apex Class->schedule Apex
+
+
+
+Cron Expression
+
+OppoBatchApex_Schedulable opp = new OppoBatchApex_Schedulable ();
+String sch = ‘30 12 14 02 01 ? 2023’;
+system.schedule(‘Cron Schedule’,sch,opp );
+
+
+Note:Parameter Pass in Cron Expression 
+Seconds(0-59),Minutes(0-59), Hours(0-23), Day_of_month(1-31), Month(1-12), Day_of_week(1->Sunday - 7), Optional_year
+
+
+
+2.Queueable Apex—---------------
+public class Lead_Queueable_Batch implements Queueable {
+    public void Execute(QueueableContext Qc){
+        List<Lead>leList = new List<Lead>();
+        List<Lead>leadList = [Select Id,LastName,Company,Rating,Phone,Email,Industry,Status From Lead];
+        for(Lead le : leadList){
+            le.LastName = 'Kishan Shinde';
+            le.Company = 'Hindi Record';
+            le.Rating = 'Hot';
+            le.Phone= '0987654321';
+            le.Email = 'hindirecords@gmail.com';
+            le.Industry ='Banking';
+            le.Status ='Open - Not Contacted';
+            leList.add(le);    
+        }
+        
+        Update leList;   
+    }
+
+}
+
+To Run Queueable—---
+
+Lead_Queueable_Batch Bc = new Lead_Queueable_Batch ();
+system.enqueueJob(Bc);
+
+Schedule this by Cron Expression
+
+public class Lead_Queueable_Batch_CronSchedule implements schedulable {
+    public void Execute(SchedulableContext sc){
+        Lead_Queueable_Batch lee = new Lead_Queueable_Batch();
+        system.enqueueJob(lee);
+        
+    }
+    
+}
+
+
+To Run using Cron—--
+
+Lead_Queueable_Batch_CronSchedule li= new  Lead_Queueable_Batch_CronSchedule();
+string sch = '20 57 20 02 01 ? 2023';
+system.schedule('Queueable Bala',sch,li);
+
+
+ 3.Write Batch Apex For Deleting Last 10 days Records
+Global class DelContactBatchAPex implements Database.batchable<sObject> {
+    Global Database.QueryLocator Start(Database.BatchableContext bc){
+        return database.getQueryLocator('Select Id,Name From Contact where CreatedDate = LAST_N_DAYS:10');
+        
+    }
+    
+    Global void Execute(Database.BatchableContext bc, List<Contact>conList){
+        List<Contact>conEmpList = new List<Contact>();
+        for(Contact con:conList){
+            conEmpList.add(con);
+            
+            
+        }
+        Delete conEmpList;
+        
+    }
+    Global void Finish(Database.BatchableContext bc){
+        
+    }
+    
+    
+
+}
+
+
+To Run This—----
+
+DelContactBatchAPex  del = new DelContactBatchAPex ();
+database.executeBatch(del,200);
+
