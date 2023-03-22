@@ -1,0 +1,27 @@
+When an opportunity is inserted or updated then if the stage name is ‘Closed won’ then create  the task.
+
+trigger OppToTaskCreate on Opportunity (after insert,after update){
+   OppToTaskCreate_Class.myMethod(trigger.new);
+}
+
+public class OppToTaskCreate_Class{
+    public static void myMethod(List<Opportunity>Opplist){
+        List<Task>Tlist = new List<Task>();
+        List<Task>tq = [Select WhatId,Status,Priority,Subject from Task];
+        for(Opportunity Opp:Opplist){
+            if(Opp.StageName =='Closed Won'){
+                 for(Task tk:tq){
+                     tk.WhatId = Opp.Id;
+                     tk.Subject = 'Other';
+                     tk.Priority = 'Medium';
+                     tk.Status = 'Not Started';
+                     Tlist.add(tk);
+            } 
+            }
+        }
+        if(Tlist!=Null)
+        {
+            Update Tlist;
+        }
+    }
+}
