@@ -1,0 +1,31 @@
+///Automatically close Opportunities with a Probability Greater than 70% when the checkbox is checked on Account.
+
+trigger checkBoxAccToOppClose on Account (after update) {
+  checkBoxAccToOppClose_Class.myMethod(trigger.new,trigger.oldMap);
+}
+
+public class checkBoxAccToOppClose_Class {
+    public static void myMethod(List<Account>Acclist,Map<Id,Account>OldData){
+        List<Opportunity>Opplist = new List<Opportunity>();
+        Set<Id>accId = new Set<Id>();
+        for(Account Acc:Acclist){
+            accId.add(Acc.Id);
+        }
+        List<Account>Aquery = [Select Id,Name,Closed_Opportunity__c,(Select Id,Name,CloseDate,StageName,Probability from Opportunities)from Account Where Id=:accId];
+        For(Account Ac:Aquery){
+            if(OldData.get(Ac.id).Closed_Opportunity__c == true){
+                for(Opportunity Opp:Ac.Opportunities){
+                    if(Opp.Probability >=70 && Opp.StageName != 'Closed Won'){
+                        Opp.CloseDate = system.today();
+                        Opp.StageName = 'Closed Won';
+                        Opplist.add(Opp);
+                    }
+                }
+            }
+        }
+        if(Opplist!=Null){
+            Update Opplist;
+        }
+    }
+}
+
