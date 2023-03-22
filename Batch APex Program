@@ -1,3 +1,4 @@
+///Batch Apex For  Contact
 
 global class OppoBatchApex implements Database.Batchable<sObject>{
     global Database.QueryLocator start(Database.BatchableContext bc){
@@ -28,7 +29,7 @@ database.executeBatch(con,200);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Schedulable Apex Class
+///Schedulable Apex Class
 
 public class OppoBatchApex_Schedulable implements Schedulable {
     public void execute(SchedulableContext S){
@@ -47,7 +48,7 @@ Setup->Apex Class->schedule Apex
 
 
 
-Cron Expression
+///Cron Expression
 
 OppoBatchApex_Schedulable opp = new OppoBatchApex_Schedulable ();
 String sch = ‘30 12 14 02 01 ? 2023’;
@@ -59,7 +60,7 @@ Seconds(0-59),Minutes(0-59), Hours(0-23), Day_of_month(1-31), Month(1-12), Day_o
 
 
 
-2.Queueable Apex—---------------
+///2.Queueable Apex—---------------
 public class Lead_Queueable_Batch implements Queueable {
     public void Execute(QueueableContext Qc){
         List<Lead>leList = new List<Lead>();
@@ -134,4 +135,22 @@ To Run This—----
 
 DelContactBatchAPex  del = new DelContactBatchAPex ();
 database.executeBatch(del,200);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
