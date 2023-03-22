@@ -1,0 +1,22 @@
+//Whenever we modify inputout object doctorname automatically updated into text field of dropoff Object When there is no relationship.
+
+//Trigger
+trigger InputoutNoRelationship on input__c (after update) {
+InputoutNoRelationship_Class.myMethod(trigger.new);
+}
+
+
+//Apex Class
+public class InputoutNoRelationship_Class {
+    public static void myMethod(List<input__c>inputList){
+        List<Dropoff__c>dropQuery = [Select Id,Text__c From Dropoff__c];
+        String Name;
+        for(input__c input: inputList){
+            Name = input.doctor_name__c;
+        }
+        for(Dropoff__c dp :dropQuery){
+            dp.text__c = Name;
+        }
+        Update dropQuery;
+    }
+}
